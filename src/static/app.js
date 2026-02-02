@@ -63,6 +63,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const email = document.getElementById("email").value;
     const activity = document.getElementById("activity").value;
 
+    signupForm.querySelector("button[type='submit']").disabled = true;
+
     try {
       const response = await fetch(
         `/activities/${encodeURIComponent(activity)}/signup?email=${encodeURIComponent(email)}`,
@@ -77,7 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
         messageDiv.textContent = result.message;
         messageDiv.className = "success";
         signupForm.reset();
-        // Refresh activities so availability and participants update
+        // Immediately update activities list
         await fetchActivities();
       } else {
         messageDiv.textContent = result.detail || "An error occurred";
@@ -86,14 +88,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
       messageDiv.classList.remove("hidden");
 
-      // Hide message after 5 seconds
+      // Hide message after 5 seconds, then re-enable form
       setTimeout(() => {
         messageDiv.classList.add("hidden");
+        signupForm.querySelector("button[type='submit']").disabled = false;
       }, 5000);
     } catch (error) {
       messageDiv.textContent = "Failed to sign up. Please try again.";
       messageDiv.className = "error";
       messageDiv.classList.remove("hidden");
+      signupForm.querySelector("button[type='submit']").disabled = false;
       console.error("Error signing up:", error);
     }
   });
